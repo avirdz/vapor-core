@@ -27,7 +27,7 @@ class HttpHandlerFactory
         } elseif (isset($event['requestContext']['elb'])) {
             return new LoadBalancedFpmHandler;
 //            return new LoadBalancedAppHandler;
-        } elseif (isset($event['httpMethod'])) {
+        } elseif (isset($event['httpMethod']) || isset($event['requestContext']['connectionId'])) {
             return new FpmHandler;
         // return new AppHandler;
         } else {
