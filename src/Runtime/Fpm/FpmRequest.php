@@ -57,7 +57,7 @@ class FpmRequest implements ProvidesRequestData
             'QUERY_STRING' => $queryString,
             'REMOTE_ADDR' => '127.0.0.1',
             'REMOTE_PORT' => $headers['x-forwarded-port'] ?? 80,
-            'REQUEST_METHOD' => $event['httpMethod'] ?? 'GET',
+            'REQUEST_METHOD' => $event['httpMethod'],
             'REQUEST_URI' => $uri,
             'SCRIPT_FILENAME' => $handler,
             'SERVER_ADDR' => '127.0.0.1',
