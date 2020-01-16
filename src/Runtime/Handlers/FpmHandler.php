@@ -19,8 +19,9 @@ class FpmHandler implements LambdaEventHandler
     {
         if (isset($event['requestContext']['connectionId'])) {
             $event['httpMethod'] = $event['httpMethod'] ?? 'GET';
+            $event['path'] = $event['path'] ?? $event['requestContext']['routeKey'];
         }
-        
+
         return $this->response(
             Fpm::resolve()->handle($this->request($event))
         );
