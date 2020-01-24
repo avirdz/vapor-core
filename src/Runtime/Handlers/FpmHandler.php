@@ -18,19 +18,26 @@ class FpmHandler implements LambdaEventHandler
     public function handle(array $event)
     {
         if (isset($event['requestContext']['connectionId'])) {
-            try {
-                $body = json_decode($event['body']);
-                $event['httpMethod'] = 'POST';
-                $event['path'] = $event['body']['event'] ?? '/' . $event['requestContext']['routeKey'];
-                $event['body'] = json_encode(array_merge($event['requestContext'], ['body' => $body]));
-
-                if (isset($event['multiValueHeaders'])) {
-                    $event['multiValueHeaders']['Content-Type'][] = 'application/json';
-                } else {
-                    $event['headers']['Content-Type'] = 'application/json';
+            $event['path'] = '/' . $event['requestContext']['routeKey'];
+            if ($event['requestContext']['eventType'] === 'MESSAGE') {
+                try {
+                    $body = json_decode($event['body']);
+                    $event['path'] = isset($body['event'])
+                        ? '/' . $body['event']
+                        : '/' . $event['requestContext']['routeKey'];
+                    $event['body'] = json_encode(array_merge($event['requestContext'], ['body' => $body]));
+                } catch (\Exception $e) {
+            
                 }
-            } catch (\Exception $e) {
-        
+            } else {
+                $event['body'] = json_encode($event['requestContext']);
+            }
+
+            $event['httpMethod'] = 'POST';
+            if (isset($event['multiValueHeaders'])) {
+                $event['multiValueHeaders']['Content-Type'][] = 'application/json';
+            } else {
+                $event['headers']['Content-Type'] = 'application/json';
             }
         }
 
