@@ -21,7 +21,7 @@ class FpmHandler implements LambdaEventHandler
             $event['path'] = '/' . $event['requestContext']['routeKey'];
             if ($event['requestContext']['eventType'] === 'MESSAGE') {
                 try {
-                    $body = json_decode($event['body']);
+                    $body = json_decode($event['body'], true);
                     $event['path'] = isset($body['event'])
                         ? '/' . $body['event']
                         : '/' . $event['requestContext']['routeKey'];
