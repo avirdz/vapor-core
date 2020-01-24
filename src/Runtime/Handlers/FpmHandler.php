@@ -18,14 +18,19 @@ class FpmHandler implements LambdaEventHandler
     public function handle(array $event)
     {
         if (isset($event['requestContext']['connectionId'])) {
-            $event['httpMethod'] = 'POST';
-            $event['path'] = $event['path'] ?? '/' . $event['requestContext']['routeKey'];
-            $event['body'] = json_encode($event['requestContext']);
+            try {
+                $body = json_decode($event['body']);
+                $event['httpMethod'] = 'POST';
+                $event['path'] = $event['body']['event'] ?? '/' . $event['requestContext']['routeKey'];
+                $event['body'] = json_encode(array_merge($event['requestContext'], ['body' => $body]));
 
-            if (isset($event['multiValueHeaders'])) {
-                $event['multiValueHeaders']['Content-Type'][] = 'application/json';
-            } else {
-                $event['headers']['Content-Type'] = 'application/json';
+                if (isset($event['multiValueHeaders'])) {
+                    $event['multiValueHeaders']['Content-Type'][] = 'application/json';
+                } else {
+                    $event['headers']['Content-Type'] = 'application/json';
+                }
+            } catch (\Exception $e) {
+        
             }
         }
 
