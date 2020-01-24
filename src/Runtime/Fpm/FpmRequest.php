@@ -79,10 +79,6 @@ class FpmRequest implements ProvidesRequestData
             $event, $headers
         );
 
-        $headers = static::ensureSocketConnectionIsSet(
-            $event, $headers
-        );
-
         foreach ($headers as $header => $value) {
             $serverVariables['HTTP_'.strtoupper(str_replace('-', '_', $header))] = $value;
         }
@@ -222,30 +218,6 @@ class FpmRequest implements ProvidesRequestData
         }
 
         return [$headers, $serverVariables];
-    }
-
-    /**
-     * Inject socket connection data into request headers.
-     *
-     * @param  array  $event
-     * @param  array  $headers
-     * @return array
-     */
-    protected static function ensureSocketConnectionIsSet(array $event, array $headers)
-    {
-        if (isset($event['requestContext']['routeKey'])) {
-            $headers['x-vapor-ws-route-key'] = $event['requestContext']['routeKey'];
-        }
-
-        if (isset($event['requestContext']['eventType'])) {
-            $headers['x-vapor-ws-event-type'] = $event['requestContext']['eventType'];
-        }
-
-        if (isset($event['requestContext']['connectionId'])) {
-            $headers['x-vapor-ws-connection-id'] = $event['requestContext']['connectionId'];
-        }
-
-        return $headers;
     }
 
     /**
